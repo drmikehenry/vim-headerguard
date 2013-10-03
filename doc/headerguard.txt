@@ -1,12 +1,13 @@
 *headerguard.txt*   Plugin for adding header guards to C/C++ header files
-
-*headerguard*       Version 0.1.1
+*headerguard*       Version 0.2.0
 
 ==============================================================================
 1.  Introduction                                    |headerguard-intro|
 2.  Installation                                    |headerguard-installation|
-3.  Customization                                   |headerguard-customization|
-4.  Credits                                         |headerguard-credits|
+3.  Installation                                    |headerguard-installation|
+4.  Customization                                   |headerguard-customization|
+5.  ChangeLog                                       |headerguard-changelog|
+6.  Credits                                         |headerguard-credits|
 
 ==============================================================================
 1.  Introduction                                    *headerguard-intro*
@@ -22,7 +23,12 @@ HeaderName.h typically looks something like this: >
 
   #endif /* HEADERNAME_H */
 
-This plugin provides the following command:         *HeaderguardAdd*  >
+Headerguard provides methods for inserting and updating header guards.
+
+==============================================================================
+2.  Usage                                           *headerguard-usage*
+
+The following command is provided:                  *HeaderguardAdd*  >
 
   :HeaderguardAdd                                   
 
@@ -39,21 +45,28 @@ To avoid mistakenly adding another header guard with the same guard name,
 #define of the guard name macro anywhere in the file.
 
 ===============================================================================
-2.  Installation                                    *headerguard-installation*
+3.  Installation                                    *headerguard-installation*
 
-Unzip the downloaded file in your personal |vimfiles| directory (~/.vim under 
-unix or %HOMEPATH%\vimfiles under windows).  The following files will
-be unpacked: >
+To install directly in your personal |vimfiles| directory (~/.vim under
+unix or %HOMEPATH%\vimfiles under windows), unpack the downloaded archive
+to yield these files: >
 
-  doc/headerguard.txt
   plugin/headerguard.vim
+  doc/headerguard.txt
 
-Finally, re-generate your help tags with the |:helptags| command, e.g.: >
+Then, re-generate your help tags with Vim's |:helptags| command, e.g.: >
 
   :helptags ~/.vim/doc
 
+You may also install headerguard using a tool like pathogen[1] by unpacking
+the downloaded archive into a bundle directory, e.g.: >
+
+  ~/.vim/bundle/vim-headerguard
+
+[1]: https://github.com/tpope/vim-pathogen
+
 ===============================================================================
-3.  Customization                                   *headerguard-customization*
+4.  Customization                                   *headerguard-customization*
 
 You may customize the format of the generated header guards by defining
 any combination of the following functions in your |.vimrc|file: >
@@ -121,13 +134,29 @@ You could use the following overrides: >
   endfunction
 
 ===============================================================================
-4.  Credits                                         |headerguard-credits|
+5.  ChangeLog                                       |headerguard-changelog|
 
-Author: Michael Henry <vim at drmikehenry.com>
+Version 0.2.0    Date    2013-10-03               *headerguard-changelog-0.2.0*
 
-Thanks to all the tireless posters on the Vim mailing lists.  I have
-benefitted greatly from the detailed and helpful postings contributed daily
-by the helpful Vim community.
+  - Convert to bundle-based installation.
+
+Version 0.1.1    Date    2013-09-24               *headerguard-changelog-0.1.1*
+
+  - Properly restore cpoptions.
+
+Version 0.1.0    Date    2007-09-14               *headerguard-changelog-0.1.0*
+
+  - Initial release.
+
+
+===============================================================================
+6.  Credits                                         |headerguard-credits|
+
+Developed by Michael Henry (vim at drmikehenry.com).
+
+Distributed under Vim's |license|.
+
+Git repository:       https://github.com/drmikehenry/vim-headerguard
 
 ===============================================================================
 vim:sts=2:et:ai:tw=78:fo=tcq2:ft=help:
