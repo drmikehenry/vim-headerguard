@@ -53,10 +53,10 @@ the downloaded archive into a bundle directory, e.g.: >
 
 The following command is provided:                  *HeaderguardAdd*  >
 
-  :HeaderguardAdd                                   
+  :HeaderguardAdd
 
 This will add a new header guard to the current file.  It checks for a
-pre-existing header guard, and if found, modifies the existing guard in-place.  
+pre-existing header guard, and if found, modifies the existing guard in-place.
 
 Detection of pre-existing header guards is somewhat primitive.  The first two
 pre-processor directives in the file must be the pre-existing header guard's

@@ -18,7 +18,7 @@ function! s:ResolveFunc(funcName, scopes)
             return function(scopedFuncName)
         endif
     endfor
-    throw "Unknown function " . a:funcName 
+    throw "Unknown function " . a:funcName
 endfunction
 
 " Return reference to Headerguard function having given suffix.
@@ -66,7 +66,7 @@ function! g:HeaderguardAdd()
 
     " Locate #define of desired guardName.
     call cursor(1, 1)
-    let guardDefine = search('^#\s*define\s\+' . 
+    let guardDefine = search('^#\s*define\s\+' .
                 \ s:Func('Name')() . '\>', "cW")
 
     " If the candidate guard lines were found in the proper
@@ -84,7 +84,7 @@ function! g:HeaderguardAdd()
         call cursor(guardLine1, 1)
 
     elseif guardDefine > 0
-        echoerr "Found '#define " . s:Func('Name')() . 
+        echoerr "Found '#define " . s:Func('Name')() .
                     \ "' without guard structure"
         " Position at unexpected #define.
         call cursor(guardDefine, 1)
