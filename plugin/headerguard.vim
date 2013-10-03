@@ -1,8 +1,4 @@
-" Vim global plugin for adding C/C++ header guards.
-" Version:      0.1.1
-" Last Change:  September 24, 2013
-" Maintainer:   Michael Henry (vim at drmikehenry.com)
-" License:      This file is placed in the public domain.
+" Vim plugin for adding C/C++ header guards.
 
 if exists("loaded_headerguard")
     finish
@@ -14,31 +10,39 @@ let loaded_headerguard = 1
 let s:save_cpoptions = &cpoptions
 set cpoptions&vim
 
-if ! exists("*g:HeaderguardName")
-    function! g:HeaderguardName()
-        return toupper(expand('%:t:gs/[^0-9a-zA-Z_]/_/g'))
-    endfunction
-endif
+" Search list of scopes for function named funcName, returning first-found.
+function! s:ResolveFunc(funcName, scopes)
+    for scope in a:scopes
+        let scopedFuncName = scope . ':' . a:funcName
+        if exists('*' . scopedFuncName)
+            return function(scopedFuncName)
+        endif
+    endfor
+    throw "Unknown function " . a:funcName 
+endfunction
 
-if ! exists("*g:HeaderguardLine1")
-    function! g:HeaderguardLine1()
-        return "#ifndef " . g:HeaderguardName()
-    endfunction
-endif
+" Return reference to Headerguard function having given suffix.
+function! s:Func(funcSuffix)
+    return s:ResolveFunc('Headerguard' . a:funcSuffix, ['b', 'g', 's'])
+endfunction
 
-if ! exists("*g:HeaderguardLine2")
-    function! g:HeaderguardLine2()
-        return "#define " . g:HeaderguardName()
-    endfunction
-endif
+function! s:HeaderguardName()
+    return toupper(expand('%:t:gs/[^0-9a-zA-Z_]/_/g'))
+endfunction
 
-if ! exists("*g:HeaderguardLine3")
-    function! g:HeaderguardLine3()
-        return "#endif /* " . g:HeaderguardName() . " */"
-    endfunction
-endif
+function! s:HeaderguardLine1()
+    return "#ifndef " . s:Func('Name')()
+endfunction
 
-function! s:HeaderguardAdd()
+function! s:HeaderguardLine2()
+    return "#define " . s:Func('Name')()
+endfunction
+
+function! s:HeaderguardLine3()
+    return "#endif /* " . s:Func('Name')() . " */"
+endfunction
+
+function! g:HeaderguardAdd()
     " Test for empty filename.
     if expand('%') == ""
         echoerr "Empty filename (save file and try again)."
@@ -46,53 +50,53 @@ function! s:HeaderguardAdd()
     endif
     " Locate first, second, and last pre-processor directives.
     call cursor(1, 1)
-    let s:poundLine1 = search('^#', "cW")
-    let s:poundLine2 = search('^#', "W")
+    let poundLine1 = search('^#', "cW")
+    let poundLine2 = search('^#', "W")
     call cursor(line("$"), col("$"))
-    let s:poundLine3 = search('^#', "b")
+    let poundLine3 = search('^#', "b")
 
     " Locate #ifndef, #define, #endif directives.
     call cursor(1, 1)
-    let s:regex1  = '^#\s*ifndef\s\+\w\+\|'
-    let s:regex1 .= '^#\s*if\s\+!\s*defined(\s*\w\+\s*)'
-    let s:guardLine1 = search(s:regex1, "cW")
-    let s:guardLine2 = search('^#\s*define', "W")
+    let regex1  = '^#\s*ifndef\s\+\w\+\|'
+    let regex1 .= '^#\s*if\s\+!\s*defined(\s*\w\+\s*)'
+    let guardLine1 = search(regex1, "cW")
+    let guardLine2 = search('^#\s*define', "W")
     call cursor(line("$"), col("$"))
-    let s:guardLine3 = search('^#\s*endif', "b")
+    let guardLine3 = search('^#\s*endif', "b")
 
     " Locate #define of desired guardName.
     call cursor(1, 1)
-    let s:guardDefine = search('^#\s*define\s\+' . 
-                \ g:HeaderguardName() . '\>', "cW")
+    let guardDefine = search('^#\s*define\s\+' . 
+                \ s:Func('Name')() . '\>', "cW")
 
     " If the candidate guard lines were found in the proper
     " location (the outermost pre-processor directives), they
     " are deemed valid header guards.
-    if s:guardLine1 > 0 && s:guardLine2 > 0 && s:guardLine3 > 0 &&
-                \ s:guardLine1 == s:poundLine1 &&
-                \ s:guardLine2 == s:poundLine2 &&
-                \ s:guardLine3 == s:poundLine3
+    if guardLine1 > 0 && guardLine2 > 0 && guardLine3 > 0 &&
+                \ guardLine1 == poundLine1 &&
+                \ guardLine2 == poundLine2 &&
+                \ guardLine3 == poundLine3
         " Replace existing header guard.
-        call setline(s:guardLine1, g:HeaderguardLine1())
-        call setline(s:guardLine2, g:HeaderguardLine2())
-        call setline(s:guardLine3, g:HeaderguardLine3())
+        call setline(guardLine1, s:Func('Line1')())
+        call setline(guardLine2, s:Func('Line2')())
+        call setline(guardLine3, s:Func('Line3')())
         " Position at new header guard start.
-        call cursor(s:guardLine1, 1)
+        call cursor(guardLine1, 1)
 
-    elseif s:guardDefine > 0
-        echoerr "Found '#define " . g:HeaderguardName() . 
+    elseif guardDefine > 0
+        echoerr "Found '#define " . s:Func('Name')() . 
                     \ "' without guard structure"
         " Position at unexpected #define.
-        call cursor(s:guardDefine, 1)
+        call cursor(guardDefine, 1)
 
     else
         " No header guard found.
-        call append(0, [ g:HeaderguardLine1(), g:HeaderguardLine2(), "" ])
-        call append(line("$"), ["", g:HeaderguardLine3()])
+        call append(0, [ s:Func('Line1')(), s:Func('Line2')(), "" ])
+        call append(line("$"), ["", s:Func('Line3')()])
         call cursor(1, 1)
     endif
 endfunction
-command! -bar HeaderguardAdd call s:HeaderguardAdd()
+command! -bar HeaderguardAdd call g:HeaderguardAdd()
 
 " Restore saved 'cpoptions'.
 let &cpoptions = s:save_cpoptions

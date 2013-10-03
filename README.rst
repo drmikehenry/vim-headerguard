@@ -13,11 +13,8 @@ HeaderName.h typically looks something like this::
 
   #endif /* HEADERNAME_H */
 
-This plugin provides the following command::
-
-  :HeaderguardAdd
-
-This will add a new header guard to the current file.  It checks for a
+Headerguard provides methods for inserting and updating header guards, and for
+tailoring the header guard style to fit local conventions.  It checks for a
 pre-existing header guard, and if found, modifies the existing guard in-place.
 
 See documentation in doc/headerguard.txt for installation, customization, and

@@ -3,7 +3,7 @@
 
 ==============================================================================
 1.  Introduction                                    |headerguard-intro|
-2.  Installation                                    |headerguard-installation|
+2.  Usage                                           |headerguard-usage|
 3.  Installation                                    |headerguard-installation|
 4.  Customization                                   |headerguard-customization|
 5.  ChangeLog                                       |headerguard-changelog|
@@ -23,7 +23,9 @@ HeaderName.h typically looks something like this: >
 
   #endif /* HEADERNAME_H */
 
-Headerguard provides methods for inserting and updating header guards.
+Headerguard provides methods for inserting and updating header guards, and for
+tailoring the header guard style to fit local conventions.  It checks for a
+pre-existing header guard, and if found, modifies the existing guard in-place.
 
 ==============================================================================
 2.  Usage                                           *headerguard-usage*
@@ -61,7 +63,7 @@ Then, re-generate your help tags with Vim's |:helptags| command, e.g.: >
 You may also install headerguard using a tool like pathogen[1] by unpacking
 the downloaded archive into a bundle directory, e.g.: >
 
-  ~/.vim/bundle/vim-headerguard
+  ~/.vim/bundle/headerguard
 
 [1]: https://github.com/tpope/vim-pathogen
 
@@ -69,7 +71,7 @@ the downloaded archive into a bundle directory, e.g.: >
 4.  Customization                                   *headerguard-customization*
 
 You may customize the format of the generated header guards by defining
-any combination of the following functions in your |.vimrc|file: >
+any combination of the following functions in your |.vimrc| file: >
 
   Function                  Returns
   =====================     =================================
@@ -88,7 +90,7 @@ guards in this style: >
 
   #endif /* HEADERNAME_H */
 
-To change the name of the macro, override the g:HeaderguardName() function.
+To change the name of the macro, define the g:HeaderguardName() function.
 The default function looks like this: >
 
   function! g:HeaderguardName()
@@ -133,12 +135,23 @@ You could use the following overrides: >
       return "#endif /* !defined(" . g:HeaderguardName() . ") */"
   endfunction
 
+For finer-grained control, headerguard will first check for buffer-local
+versions of the above functions, then global versions, then finally the
+script-local versions found within headerguard itself.  So, for example, the
+below buffer-local function will take precedence over g:HeaderguardName(): >
+
+  function! b:HeaderguardName()
+      return "_" . toupper(expand('%:t:gs/[^0-9a-zA-Z_]/_/g'))
+  endfunction
+
 ===============================================================================
 5.  ChangeLog                                       |headerguard-changelog|
 
 Version 0.2.0    Date    2013-10-03               *headerguard-changelog-0.2.0*
 
   - Convert to bundle-based installation.
+
+  - Allow for buffer-local overrides of global guard definitions.
 
 Version 0.1.1    Date    2013-09-24               *headerguard-changelog-0.1.1*
 
@@ -147,7 +160,6 @@ Version 0.1.1    Date    2013-09-24               *headerguard-changelog-0.1.1*
 Version 0.1.0    Date    2007-09-14               *headerguard-changelog-0.1.0*
 
   - Initial release.
-
 
 ===============================================================================
 6.  Credits                                         |headerguard-credits|
