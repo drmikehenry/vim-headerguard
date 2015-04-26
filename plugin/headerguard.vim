@@ -5,6 +5,9 @@ if exists("loaded_headerguard")
 endif
 let loaded_headerguard = 1
 
+if !exists('g:headerguard_cpp_line_comments')
+    let g:headerguard_cpp_line_comments = 0
+endif
 
 " Save 'cpoptions' and set Vim default to enable line continuations.
 let s:save_cpoptions = &cpoptions
@@ -39,7 +42,11 @@ function! s:HeaderguardLine2()
 endfunction
 
 function! s:HeaderguardLine3()
-    return "#endif /* " . s:Func('Name')() . " */"
+    if g:headerguard_cpp_line_comments
+        return "#endif // " . s:Func('Name')()
+    else
+        return "#endif /* " . s:Func('Name')() . " */"
+    endif
 endfunction
 
 function! g:HeaderguardAdd()
