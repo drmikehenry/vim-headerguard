@@ -144,6 +144,18 @@ below buffer-local function will take precedence over g:HeaderguardName(): >
       return "_" . toupper(expand('%:t:gs/[^0-9a-zA-Z_]/_/g'))
   endfunction
 
+There is also a possibility to fine-tune the behavior without overriding
+functions. The comments at the end can be changed by setting the value of
+g:headerguard_cpp_line_comments to 1. In this case, the default header guard
+looks like this: >
+
+  #ifndef HEADERNAME_H
+  #define HEADERNAME_H
+
+    ...header content...
+
+  #endif /* HEADERNAME_H */
+
 ===============================================================================
 5.  ChangeLog                                       |headerguard-changelog|
 
