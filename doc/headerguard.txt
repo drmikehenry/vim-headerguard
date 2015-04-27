@@ -154,7 +154,7 @@ looks like this: >
 
     ...header content...
 
-  #endif /* HEADERNAME_H */
+  #endif // HEADERNAME_H
 
 ===============================================================================
 5.  ChangeLog                                       |headerguard-changelog|
